@@ -15,12 +15,16 @@
 // <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
 @property (strong, nonatomic) UICollectionViewFlowLayout *simpleLayout;
 @property (strong, nonatomic) UICollectionViewFlowLayout *smallLayout;
+@property (weak, nonatomic) IBOutlet UIButton *subjectButton;
+@property (weak, nonatomic) IBOutlet UIButton *locationButton;
 @property (nonatomic) NSMutableArray *pictureArray;
 @property (nonatomic) NSMutableArray *subjectArray1;
 @property (nonatomic) NSMutableArray *subjectArray2;
+@property (nonatomic) NSMutableArray *locationArray1;
+@property (nonatomic) NSMutableArray *locationArray2;
+@property (nonatomic) NSMutableArray *locationArray3;
 @property (nonatomic) MyImageObject *objectOne;
 @property (nonatomic) MyImageObject *objectTwo;
 @property (nonatomic) MyImageObject *objectThree;
@@ -31,6 +35,7 @@
 @property (nonatomic) MyImageObject *objectEight;
 @property (nonatomic) MyImageObject *objectNine;
 @property (nonatomic) MyImageObject *objectTen;
+@property (nonatomic) NSInteger viewState;
 
 
 
@@ -44,6 +49,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.viewState = 1;
     
     self.objectOne = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Murica" andImage:[UIImage imageNamed:@"picture-1"]];
     self.objectTwo = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Your Mother's House" andImage:[UIImage imageNamed:@"picture-2"]];
@@ -71,6 +78,9 @@
     
     self.subjectArray1 = [NSMutableArray new];
     self.subjectArray2 = [NSMutableArray new];
+    self.locationArray1 = [NSMutableArray new];
+    self.locationArray2 = [NSMutableArray new];
+    self.locationArray3 = [NSMutableArray new];
 
     
     
@@ -82,6 +92,19 @@
             [self.subjectArray2 addObject:x];
         }
     }
+    
+    for (MyImageObject *x in self.pictureArray) {
+        if ([x.location isEqualToString:@"Murica"]){
+            [self.locationArray1 addObject:x];
+        }
+        else if ([x.location isEqualToString:@"Your Mother's House"]) {
+            [self.locationArray2 addObject:x];
+        }
+        else {
+            [self.locationArray3 addObject:x];
+        }
+    }
+
 
     
     [self setupSimpleLayout];
@@ -113,52 +136,108 @@
     self.smallLayout.minimumLineSpacing = 5;
     self.smallLayout.minimumInteritemSpacing = 5;
     self.smallLayout.headerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 30);
-    self.smallLayout.footerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 15);
+    self.smallLayout.footerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 5);
 }
 
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
-    return 2;
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    
+    switch (self.viewState) {
+        case 0:
+            return 2;
+            break;
+        case 1:
+            return 3;
+            break;
+        default:
+            return 0;
+    }
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView
      numberOfItemsInSection:(NSInteger)section {
-    switch (section) {
+    switch (self.viewState) {
         case 0:
-            return self.subjectArray1.count;
+            switch (section) {
+                case 0:
+                    return self.subjectArray1.count;
+                case 1:
+                    return self.subjectArray2.count;
+                default:
+                    return 1;
+            }
         case 1:
-            return self.subjectArray2.count;
+            switch (section) {
+                case 0:
+                    return self.locationArray1.count;
+                case 1:
+                    return self.locationArray2.count;
+                case 2:
+                    return self.locationArray3.count;
+                default:
+                    return 1;
+            }
         default:
-            return 1;
+            return 0;
     }
 }
 
 //data collection
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
-    
-    if (indexPath.section == 0) {
-        MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
-                                                                                    forIndexPath:indexPath];
-        
-        MyImageObject *imageObjectProxy = [self.subjectArray1 objectAtIndex:indexPath.row];
-        
-        cell.cellImageView.image = imageObjectProxy.image;
-        
-        return cell;
+    switch (self.viewState) {
+        case 0:
+            if (indexPath.section == 0) {
+                MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                            forIndexPath:indexPath];
+                MyImageObject *imageObjectProxy = [self.subjectArray1 objectAtIndex:indexPath.row];
+                cell.cellImageView.image = imageObjectProxy.image;
+                return cell;
+            }
+            else if (indexPath.section == 1) {
+                MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                            forIndexPath:indexPath];
+                MyImageObject *imageObjectProxy = [self.subjectArray2 objectAtIndex:indexPath.row];
+                cell.cellImageView.image = imageObjectProxy.image;
+                return cell;
+            }
+            return nil;
+            
+            
+        case 1:
+            switch (indexPath.section) {
+                case 0:{
+                    MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                                forIndexPath:indexPath];
+                    MyImageObject *imageObjectProxy = [self.locationArray1 objectAtIndex:indexPath.row];
+                    cell.cellImageView.image = imageObjectProxy.image;
+                    return cell;
+                    break;
+                }
+                case 1:{
+                    MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                                forIndexPath:indexPath];
+                    MyImageObject *imageObjectProxy = [self.locationArray2 objectAtIndex:indexPath.row];
+                    cell.cellImageView.image = imageObjectProxy.image;
+                    return cell;
+                    break;
+                }
+                case 2:{
+                    MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                                forIndexPath:indexPath];
+                    MyImageObject *imageObjectProxy = [self.locationArray3 objectAtIndex:indexPath.row];
+                    cell.cellImageView.image = imageObjectProxy.image;
+                    return cell;
+                    break;
+                }
+                default:
+                    return nil;
+                    break;
+            }
+        default:
+            return nil;
+            break;
     }
-    else if (indexPath.section == 1) {
-        MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
-                                                                                    forIndexPath:indexPath];
-        
-        MyImageObject *imageObjectProxy = [self.subjectArray2 objectAtIndex:indexPath.row];
-        
-        cell.cellImageView.image = imageObjectProxy.image;
-        
-        return cell;
-    }
-    return nil;
 }
 
 
@@ -170,17 +249,62 @@
         MyHeaderReusableView *headerReusableView = [self.collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                                                            withReuseIdentifier:@"MyHeaderReusableView"
                                                                                   forIndexPath:indexPath];
-    if (indexPath.section == 0) {
     
-        headerReusableView.headerLabel.text = @"Great";
-        return headerReusableView;
+    switch (self.viewState) {
+        case 0:
+            if (indexPath.section == 0) {
+                
+                headerReusableView.headerLabel.text = @"Great";
+                return headerReusableView;
+            }
+            
+            else if (indexPath.section == 1) {
+                headerReusableView.headerLabel.text = @"Best";
+                return headerReusableView;
+            }
+            return nil;
+            break;
+        case 1:
+            switch (indexPath.section) {
+                case 0:{
+                    headerReusableView.headerLabel.text = @"Murica";
+                    return headerReusableView;
+                    break;
+                }
+                case 1:{
+                    headerReusableView.headerLabel.text = @"Your Mother's House";
+                    return headerReusableView;
+                    break;
+                }
+                case 2:{
+                    headerReusableView.headerLabel.text = @"Kekistan";
+                    return headerReusableView;
+                    break;
+                }
+                default:
+                    return nil;
+                    break;
+            }
+            
+        default:
+            return nil;
+            break;
     }
-
-    else if (indexPath.section == 1) {
-        headerReusableView.headerLabel.text = @"Best";
-        return headerReusableView;
-    }
-    return nil;
 }
+
+
+- (IBAction)subjectButtonPushed:(UIButton*)sender {
+    self.viewState = 0;
+    [self.collectionView reloadData];
+}
+
+
+- (IBAction)locationPushed:(UIButton *)sender {
+    self.viewState = 1;
+    [self.collectionView reloadData];
+
+    
+}
+
 
 @end
