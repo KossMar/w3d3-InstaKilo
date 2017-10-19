@@ -19,6 +19,8 @@
 @property (strong, nonatomic) UICollectionViewFlowLayout *simpleLayout;
 @property (strong, nonatomic) UICollectionViewFlowLayout *smallLayout;
 @property (nonatomic) NSMutableArray *pictureArray;
+@property (nonatomic) NSMutableArray *subjectArray1;
+@property (nonatomic) NSMutableArray *subjectArray2;
 @property (nonatomic) MyImageObject *objectOne;
 @property (nonatomic) MyImageObject *objectTwo;
 @property (nonatomic) MyImageObject *objectThree;
@@ -44,7 +46,7 @@
     [super viewDidLoad];
     
     self.objectOne = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Murica" andImage:[UIImage imageNamed:@"picture-1"]];
-    self.objectTwo = [[MyImageObject alloc] initWithSubject:@"Best" location:@"Your Mother's House" andImage:[UIImage imageNamed:@"picture-2"]];
+    self.objectTwo = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Your Mother's House" andImage:[UIImage imageNamed:@"picture-2"]];
     self.objectThree = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Murica" andImage:[UIImage imageNamed:@"picture-3"]];
     self.objectFour = [[MyImageObject alloc] initWithSubject:@"Best" location:@"Kekistan" andImage:[UIImage imageNamed:@"picture-4"]];
     self.objectFive = [[MyImageObject alloc] initWithSubject:@"Great" location:@"Murica" andImage:[UIImage imageNamed:@"picture-5"]];
@@ -67,12 +69,19 @@
                          self.objectTen,
                          nil];
     
-//    for (self.pictureArray )
+    self.subjectArray1 = [NSMutableArray new];
+    self.subjectArray2 = [NSMutableArray new];
+
     
     
-//    for (int x = 0; x < self.pictureArray.count; x++) {
-//        [self.pictureArray addObject:[UIImage imageNamed:[NSString stringWithFormat:@"picture-%d", x+1]]];
-//    }
+    for (MyImageObject *x in self.pictureArray) {
+        if ([x.subject isEqualToString:@"Great"]){
+            [self.subjectArray1 addObject:x];
+        }
+        else {
+            [self.subjectArray2 addObject:x];
+        }
+    }
 
     
     [self setupSimpleLayout];
@@ -91,11 +100,8 @@
     self.simpleLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
     self.simpleLayout.minimumInteritemSpacing = 15;
     self.simpleLayout.minimumLineSpacing = 10;
-    
     self.simpleLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    
     self.simpleLayout.headerReferenceSize = CGSizeMake(50, self.collectionView.frame.size.height);
-    
     self.simpleLayout.footerReferenceSize = CGSizeMake(30, self.collectionView.frame.size.width);
 }
 
@@ -106,62 +112,75 @@
     self.smallLayout.sectionInset = UIEdgeInsetsMake(5, 5, 5, 5);
     self.smallLayout.minimumLineSpacing = 5;
     self.smallLayout.minimumInteritemSpacing = 5;
-    self.smallLayout.headerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 25);
+    self.smallLayout.headerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 30);
     self.smallLayout.footerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 15);
 }
 
 
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 2;
+}
+
+- (NSInteger)collectionView:(nonnull UICollectionView *)collectionView
+     numberOfItemsInSection:(NSInteger)section {
+    switch (section) {
+        case 0:
+            return self.subjectArray1.count;
+        case 1:
+            return self.subjectArray2.count;
+        default:
+            return 1;
+    }
+}
+
+//data collection
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
-    MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
-                                                                                forIndexPath:indexPath];
     
-    MyImageObject *imageObjectProxy = [self.pictureArray objectAtIndex:indexPath.row];
-    
-    cell.cellImageView.image = imageObjectProxy.image;
-    
-    
-    return cell;
+    if (indexPath.section == 0) {
+        MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                    forIndexPath:indexPath];
+        
+        MyImageObject *imageObjectProxy = [self.subjectArray1 objectAtIndex:indexPath.row];
+        
+        cell.cellImageView.image = imageObjectProxy.image;
+        
+        return cell;
+    }
+    else if (indexPath.section == 1) {
+        MyCollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:@"imageCell"
+                                                                                    forIndexPath:indexPath];
+        
+        MyImageObject *imageObjectProxy = [self.subjectArray2 objectAtIndex:indexPath.row];
+        
+        cell.cellImageView.image = imageObjectProxy.image;
+        
+        return cell;
+    }
+    return nil;
 }
 
-- (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+
+// collect header data
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
+           viewForSupplementaryElementOfKind:(NSString *)kind
+                                 atIndexPath:(NSIndexPath *)indexPath {
+
+        MyHeaderReusableView *headerReusableView = [self.collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                                                                           withReuseIdentifier:@"MyHeaderReusableView"
+                                                                                  forIndexPath:indexPath];
+    if (indexPath.section == 0) {
     
-    NSInteger pictureCount = self.pictureArray.count;
-    return pictureCount;
+        headerReusableView.headerLabel.text = @"Great";
+        return headerReusableView;
+    }
+
+    else if (indexPath.section == 1) {
+        headerReusableView.headerLabel.text = @"Best";
+        return headerReusableView;
+    }
+    return nil;
 }
-
-//- (NSInteger)collectionView:(nonnull UICollectionView *)collectionView
-//     numberOfItemsInSection:(NSInteger)section
-//{
-//    switch (section) {
-//        case 0:
-//            return 5;
-//        case 1:
-//            return 3;
-//    }
-//}
-
-//- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
-//           viewForSupplementaryElementOfKind:(NSString *)kind
-//                                 atIndexPath:(NSIndexPath *)indexPath
-//{
-////    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-//        MyHeaderReusableView *headerReusableView = [self.collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-//                                                                           withReuseIdentifier:@"MyHeaderReusableView"
-//                                                                                  forIndexPath:indexPath];
-//        headerReusableView.headerLabel.text = [NSString stringWithFormat:@"%ld", (long)indexPath.section];
-//        return headerReusableView;
-////    }
-//    else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
-//        MyFooterView *footerView = [self.collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter
-//                                                                           withReuseIdentifier:@"MyFooterView"
-//                                                                                  forIndexPath:indexPath];
-//        footerView.label.text = [NSString stringWithFormat:@"%ld", (long)indexPath.section];
-//        return footerView;
-//    }
-//    else {
-//        return nil;
-//    }
-//}
 
 @end

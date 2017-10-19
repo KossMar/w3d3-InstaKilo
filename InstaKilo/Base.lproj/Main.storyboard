@@ -5,6 +5,7 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -51,19 +52,24 @@
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="4Bh-8Y-rwh" customClass="MyHeaderReusableView">
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MyHeaderReusableView" id="4Bh-8Y-rwh" customClass="MyHeaderReusableView">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Write thing here" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EPo-1J-igw">
-                                            <rect key="frame" x="94" y="15" width="189" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Write thing here" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EPo-1J-igw">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="bottomMargin" secondItem="EPo-1J-igw" secondAttribute="bottom" id="Obz-Ug-ITK"/>
+                                        <constraint firstItem="EPo-1J-igw" firstAttribute="top" secondItem="4Bh-8Y-rwh" secondAttribute="topMargin" id="h1d-fE-g3N"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="EPo-1J-igw" secondAttribute="trailing" id="oFV-Qb-jOI"/>
+                                        <constraint firstItem="EPo-1J-igw" firstAttribute="leading" secondItem="4Bh-8Y-rwh" secondAttribute="leadingMargin" id="rJp-XI-TTa"/>
+                                    </constraints>
                                     <connections>
                                         <outlet property="headerLabel" destination="EPo-1J-igw" id="hu8-7e-OD6"/>
                                     </connections>
