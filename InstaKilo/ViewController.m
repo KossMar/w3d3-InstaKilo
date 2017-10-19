@@ -105,16 +105,17 @@
         }
     }
 
-
-    
     [self setupSimpleLayout];
     [self setupSmallLayout];
     
     self.collectionView.collectionViewLayout = self.smallLayout;
     
-    
-
+    UITapGestureRecognizer *deleteTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapDelete:)];
+    [deleteTap setNumberOfTapsRequired:2];
+    [self.collectionView addGestureRecognizer:deleteTap];
 }
+
+
 
 
 - (void)setupSimpleLayout {
@@ -128,15 +129,17 @@
     self.simpleLayout.footerReferenceSize = CGSizeMake(30, self.collectionView.frame.size.width);
 }
 
-- (void)setupSmallLayout
-{
+- (void)setupSmallLayout {
+    CGFloat width = (self.view.frame.size.width / 3);
+    
     self.smallLayout = [[UICollectionViewFlowLayout alloc] init];
-    self.smallLayout.itemSize = CGSizeMake(130, 130);
-    self.smallLayout.sectionInset = UIEdgeInsetsMake(5, 5, 5, 5);
-    self.smallLayout.minimumLineSpacing = 5;
-    self.smallLayout.minimumInteritemSpacing = 5;
+    self.smallLayout.itemSize = CGSizeMake(width, width);
+    self.smallLayout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.smallLayout.minimumLineSpacing = 0;
+    self.smallLayout.minimumInteritemSpacing = 0;
     self.smallLayout.headerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 30);
-    self.smallLayout.footerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 5);
+    self.smallLayout.footerReferenceSize = CGSizeMake(CGRectGetWidth(self.collectionView.frame), 15);
+    self.smallLayout.sectionHeadersPinToVisibleBounds = YES;
 }
 
 
@@ -302,9 +305,44 @@
 - (IBAction)locationPushed:(UIButton *)sender {
     self.viewState = 1;
     [self.collectionView reloadData];
-
+}
+    
+- (void)doubleTapDelete:(UITapGestureRecognizer*)sender {
+    
+    CGPoint location = [sender locationInView:self.collectionView];
+    
+    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:location];
+    
+    if (indexPath) {
+        switch (indexPath.section) {
+            case 0: {
+                MyImageObject *object = [self.locationArray1 objectAtIndex:indexPath.row];
+                [self.locationArray1 removeObject:object];
+                break;
+            }
+            case 1: {
+                MyImageObject *object = [self.locationArray2 objectAtIndex:indexPath.row];
+                [self.locationArray2 removeObject:object];
+                break;
+            }
+            case 2: {
+                if (indexPath.item) {
+                    MyImageObject *object = [self.locationArray3 objectAtIndex:indexPath.row];
+                    [self.locationArray3 removeObject:object];
+                    break;
+                }
+            default:
+                break;
+            }
+        }
+    }
+        
+    [self.collectionView reloadData];
     
 }
 
 
+
+
 @end
+
